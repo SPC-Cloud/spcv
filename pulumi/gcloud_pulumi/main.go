@@ -22,7 +22,7 @@ func main() {
 		buildTrigger, err := cloudbuild.NewTrigger(ctx, "spcvBuildTrigger", &cloudbuild.TriggerArgs{
 			Name: pulumi.String(serviceName),
 			Github: cloudbuild.TriggerGithubArgs{
-				Owner: pulumi.String("spatel96"), // Replace with your GitHub username.
+				Owner: pulumi.String("SPC-CLOUD"), // Replace with your GitHub username.
 				Name:  pulumi.String("spcv"),      // Replace with your GitHub repository name.
 				Push: cloudbuild.TriggerGithubPushArgs{
 					Branch: pulumi.String("main"), // Replace with your branch name if different.
@@ -52,6 +52,26 @@ func main() {
 		if err != nil {
 			return err
 		}
+		
+		noauth, err := organizations.LookupIAMPolicy(ctx, &organizations.LookupIAMPolicyArgs{
+			Bindings: []organizations.GetIAMPolicyBinding{
+				{
+					Role: "roles/run.invoker",
+					Members: []string{
+						"allUsers",
+					},
+				},
+			},
+		}, nil)
+		if err != nil {
+			return err
+		}
+		_, err = cloudrun.NewIamPolicy(ctx, "noauth", &cloudrun.IamPolicyArgs{
+			Location:   _default.Location,
+			Project:    _default.Project,
+			Service:    _default.Name,
+			PolicyData: pulumi.String(noauth.PolicyData),
+		})
 		
 		return nil
 	})
