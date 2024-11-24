@@ -7,7 +7,7 @@
 - Using [Canva](https://www.canva.com/) to embed the majority of the front-end logic.
 - Branches are currently being built using GitHub Actions.
 
-# Build and run instructions
+## Build and run instructions
 - Clone the Github Repo locally.
 - There are three build options:
   - Run a `docker build . -t spcv`
@@ -16,7 +16,7 @@
     - This will build and run the spcv container already built, or will use the aforementioned Dockerfile to build and run.
   - Run a `gradle clean build`
     - This will assemble a shadow jar that can be executed locally (gradle run)
-- The app will be accessible on port 8080, e.g. `localhost:8080`
+- The app will be accessible on port 3339, e.g. `localhost:3339`
 
 
 

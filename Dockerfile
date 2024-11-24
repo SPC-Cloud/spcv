@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/. /app/.
 
 # Expose the port that your Micronaut application is running on
-EXPOSE 8080
+EXPOSE 3339
 
 # Create a non-root user named "trunk"
 RUN useradd -m -u 1001 spcv
@@ -31,7 +31,7 @@ RUN chown -R spcv /app
 # Switch to the non-root user
 USER spcv
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "ping localhost:8080 -c 1" ]" ]
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "ping localhost:3339 -c 1" ]" ]
 
 # Specify the command to run your application when the container starts
 CMD ["java", "-jar", "default-0.2-all.jar"]
