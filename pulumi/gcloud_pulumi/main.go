@@ -22,7 +22,7 @@ func main() {
 		buildTrigger, err := cloudbuild.NewTrigger(ctx, "spcvBuildTrigger", &cloudbuild.TriggerArgs{
 			Name: pulumi.String(serviceName),
 			Github: cloudbuild.TriggerGithubArgs{
-				Owner: pulumi.String("spatel96"), // Replace with your GitHub username.
+				Owner: pulumi.String("SPC-Cloud"), // Replace with your GitHub username.
 				Name:  pulumi.String("spcv"),      // Replace with your GitHub repository name.
 				Push: cloudbuild.TriggerGithubPushArgs{
 					Branch: pulumi.String("main"), // Replace with your branch name if different.
