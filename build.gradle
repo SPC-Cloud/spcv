@@ -52,10 +52,21 @@ tasks.register("describe") {
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
     targetCompatibility = JavaVersion.toVersion("21")
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 
-graalvmNative.toolchainDetection = false
+graalvmNative {
+    binaries {
+        main {
+            javaLauncher = javaToolchains.launcherFor {
+                languageVersion = JavaLanguageVersion.of(21)
+            }
+        }
+    }
+}
 micronaut {
     runtime("netty")
     testRuntime("junit5")

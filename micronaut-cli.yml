@@ -1,5 +1,5 @@
 applicationType: default
-defaultPackage: example.micronaut
+defaultPackage: com.spcv
 testFramework: junit
 sourceLanguage: java
 buildTool: gradle

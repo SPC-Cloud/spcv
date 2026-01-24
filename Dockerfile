@@ -1,37 +1,42 @@
-FROM gradle:jdk21 AS cache
-WORKDIR /app
-ENV GRADLE_USER_HOME /cache
-COPY build.gradle gradle.properties settings.gradle ./
-RUN gradle --no-daemon build --stacktrace
+# Stage 1: Build Stage
+FROM ghcr.io/graalvm/native-image-community:21 AS builder
 
-FROM gradle:jdk21 AS builder
+# Install findutils to provide xargs, which enables the Gradle wrapper to work
+RUN microdnf install -y findutils
+
 WORKDIR /app
-COPY --from=cache /cache /home/gradle/.gradle
+
+# Copy gradle files first for caching
 COPY build.gradle gradle.properties settings.gradle gradlew ./
-COPY src/ src/
-RUN gradle --no-daemon build --stacktrace
+COPY gradle gradle
+
+# Copy source code
+COPY src src
+
+# Build native executable
+RUN ./gradlew nativeCompile --no-daemon
 
 # Stage 2: Run Stage
-FROM ghcr.io/graalvm/jdk-community:21
+FROM ubuntu:noble
 
 WORKDIR /app
 
 # Copy only the built artifacts from the previous stage
-COPY --from=builder /app/build/libs/. /app/.
+COPY --from=builder /app/build/native/nativeCompile/default /app/spcv
 
-# Expose the port that your Micronaut application is running on
+# Expose the port
 EXPOSE 3339
 
-# Create a non-root user named "trunk"
-RUN useradd -m -u 1001 spcv
-
-# Change ownership of the application directory to the non-root user
-RUN chown -R spcv /app
+# Create a non-root user
+RUN useradd -m -u 1001 spcv && \
+    chown -R spcv /app
 
 # Switch to the non-root user
 USER spcv
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "ping localhost:3339 -c 1" ]" ]
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD ["/app/spcv", "--health"] || exit 1 
+# Note: Basic check, refine if app has specific health endpoint handling from shell
 
-# Specify the command to run your application when the container starts
-CMD ["java", "-jar", "default-0.2-all.jar"]
+CMD ["/app/spcv"]
