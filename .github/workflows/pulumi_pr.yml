@@ -14,10 +14,6 @@ jobs:
         with:
           go-version: 'stable'
       - run: go mod download
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
       - uses: pulumi/actions@v3
         with:
           command: preview
